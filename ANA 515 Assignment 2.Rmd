@@ -1,0 +1,71 @@
+---
+title: "ANA 515 Assignment 2"
+author: "William Halim"
+date: '2022-09-18'
+output: 
+    html_document:
+      theme:
+        bootswatch: minty
+---
+## R Markdown
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Section 1: Description of the data
+  The data set contains information about airlines and their safety incidents. This data is measuring information about safety incidents, fatal accidents, and fatalities in 2 different time frames of 14 years. i.e 1985 - 1999 and 2000 - 2014 which describes incidents, fatal accidents, and fatalities in both of the time frames across 56 airlines. Incidents column has information about number of safety incidents with the airline. Fatal accidents has information about number of fatal accidents. Fatalities has information about total number of fatalities. This data set also has information about available seat km flown every week. The file is saved in a .csv file and it is a delimited file, the delimiter is comma (,)
+  
+#Section 2: Reading data into R
+```{r airline, include=FALSE}
+
+Airline_safety<-read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/airline-safety/airline-safety.csv")
+
+Airline_safety1<-data.frame(Airline_safety)
+
+```
+
+I have used read.csv to read the data from github url. This is a base r function with built-in functionality to read csv file. 
+
+#Section 3: Clean Data
+```{r results = TRUE}
+library(dplyr)
+  ##renaming the columns
+
+Airline_safety1 <- Airline_safety1 %>%
+  rename(incidents85to99=incidents_85_99, 
+         Airline_Name=airline, 
+         fatalities85to99=fatalities_85_99)
+  ##Creating a subset by filtering on the basis of available seat km per week greater than 1 billion
+Seat_kmperweek <- Airline_safety1 %>% filter(avail_seat_km_per_week > 1000000000)
+```
+
+#Section 4: Characteristics of the data
+Airline_safety1 dataframe has 'r nrow(Airline_safety1)' rows and 'r ncol(Airline_Safety1)' columns, the names of the columns and a brief description of each are in the table below:
+
+```{r, results = TRUE}
+library(knitr)
+
+Column_names <- c("Airline", "avail_seat_km_per_week", "incidents_85_99", "fatal_accidents_85_99", "fatalities_85_99", "incidents_00_14", "fatal_accidents_00_14", "fatal_accidents_00_14")
+
+Description <- c("Airline Name", "Available seat kilometers flown every week", "Total number of incidents, 1985-1999", "Total number of fatal accidents, 1985-1999", "Total number of fatalities, 1985-1999", "Total number of incidents, 2000-2014", "Total number of fatal accidents, 2000-2014", "Total number of fatalities, 2000-2014")
+
+Column_details <- data.frame(Column_names, Description)
+
+print(knitr::kable(Column_details,"pipe", align = "ll"))
+
+```
+
+#Section 5: Summary Statistics
+
+```{r results = TRUE}
+library(dplyr)
+
+#Subsetting the data to keep 3 columns and filter on avail_seat_km_per_week
+
+airsafe_85_99 <- Airline_safety1[Airline_safety1$avail_seat_km_per_week > 1000000000, c("incidents85to99", "fatal_accidents_85_99", "fatalities85to99")]
+
+Summary_airsafe<-summary(airsafe_85_99)
+
+knitr::kable(Summary_airsafe, "pipe")
+
+```
